@@ -1,9 +1,12 @@
 terraform {
+# variables are passed in from .gitlab-ci.yml
   backend "http" {
-    address = "https://gitlab.com/api/v4/projects/68895536/terraform/state/${var.env_name}"
-    lock_address = "https://gitlab.com/api/v4/projects/68895536/terraform/state/${var.env_name}/lock"
-    unlock_address = "https://gitlab.com/api/v4/projects/68895536/terraform/state/${var.env_name}/lock"
-    username = "${var.gitlab_username}"
-    password = "${var.gitlab_token}"
+    address = ""
+    lock_address = ""
+    unlock_address = ""
+    username = ""
+    password = ""
+    lock_method    = "POST"
+    unlock_method  = "DELETE"
   }
 }
