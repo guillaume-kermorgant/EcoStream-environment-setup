@@ -10,9 +10,14 @@ variables:
 default:
   image: registry.gitlab.com/gkermo/ecostream/opentofu/gitlab-opentofu:1.1.0-opentofu1.9.0-alpine-amd64
   before_script:
-  - cd $TOFU_DIR
-  - tofu --version
-  - tofu init -backend-config="address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}" \ -backend-config="lock_address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}/lock" \ -backend-config="unlock_address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}/lock" \ -backend-config="username=${GITLAB_USERNAME}" \ -backend-config="password=${GITLAB_TOKEN}"
+  - |
+    cd $TOFU_DIR
+    tofu --version
+    tofu init -backend-config="address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}" \
+      -backend-config="lock_address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}/lock" \
+      -backend-config="unlock_address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}/lock" \
+      -backend-config="username=${GITLAB_USERNAME}" \
+      -backend-config="password=${GITLAB_TOKEN}"
 
 validate:
   stage: validate
