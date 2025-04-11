@@ -6,6 +6,7 @@ stages:
 
 variables:
   TOFU_DIR: "tofu"
+  AWS_REGION: $AWS_DEFAULT_REGION
 
 default:
   image: registry.gitlab.com/gkermo/ecostream/opentofu/gitlab-opentofu:1.1.0-opentofu1.9.0-alpine-amd64
@@ -27,7 +28,8 @@ validate:
 plan:
   stage: plan
   script:
-  - tofu plan -input=false -var-file="tofu.tfvars"
+  - |
+    tofu plan -input=false -var-file="tofu.tfvars"
   artifacts:
     paths:
     - $TOFU_DIR/planfile
