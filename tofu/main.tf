@@ -1,4 +1,4 @@
-resource "aws_instance" "free_ec2" {
+resource "aws_instance" "ec2_instance" {
   ami           = var.ec2_conf["ami_id"]
   instance_type = var.ec2_conf["instance_type"]
 
