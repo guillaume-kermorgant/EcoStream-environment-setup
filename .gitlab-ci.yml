@@ -1,7 +1,41 @@
-include:
-- component: $CI_SERVER_FQDN/components/opentofu/validate-plan-apply@1.1.0
-  inputs:
-    opentofu_version: 1.9.0
-    root_dir: tofu/
+stages:
+- validate
+- plan
+- apply
+- destroy
 
-stages: [ validate, test, build, deploy, cleanup ]
+variables:
+  TOFU_DIR: "tofu"
+
+default:
+  image: opentofu/opentofu:latest
+  before_script:
+  - cd $TOFU_DIR
+  - tofu --version
+  - tofu init
+
+validate:
+  stage: validate
+  script:
+  - tofu validate
+
+plan:
+  stage: plan
+  script:
+  - tofu plan -input=false -var-file="tofu.tfvars"
+  artifacts:
+    paths:
+    - $TOFU_DIR/planfile
+    when: always
+
+apply:
+  stage: apply
+  script:
+  - tofu apply -auto-approve -input=false -var-file="tofu.tfvars"
+  when: manual
+
+destroy:
+  stage: destroy
+  script:
+  - tofu destroy -auto-approve -input=false -var-file="tofu.tfvars"
+  when: manual

@@ -4,11 +4,11 @@ variable "region" {
 }
 
 variable "ami_id" {
-  description = "AMI to use"
+  description = "AMI ID for Amazon Linux 2"
   type        = string
 }
 
 variable "instance_type" {
-  description = "Instance type"
+  description = "EC2 instance type"
   type        = string
 }
