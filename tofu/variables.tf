@@ -1,14 +1,4 @@
-variable "region" {
-  description = "AWS region"
-  type        = string
-}
-
-variable "ami_id" {
-  description = "AMI ID for Amazon Linux 2"
-  type        = string
-}
-
-variable "instance_type" {
-  description = "EC2 instance type"
-  type        = string
+variable "ec2_conf" {
+  description = "EC2 instance configuration"
+  type        = map(string)
 }

@@ -1,9 +1,9 @@
 resource "aws_instance" "free_ec2" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
+  ami           = var.ec2_conf["ami_id"]
+  instance_type = var.ec2_conf["instance_type"]
 
   tags = {
-    Name = "gitlab-opentofu-ec2"
+    Name = var.ec2_conf["instance_name"]
   }
 }
 

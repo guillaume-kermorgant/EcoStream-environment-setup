@@ -1,3 +1,5 @@
-region        = "eu-west-3"
-ami_id        = "ami-0669b163befffbdfc" # Amazon Linux 2 in Paris (check for your region)
-instance_type = "t2.micro"
+ec2_conf = {
+  ami_id        = "ami-0669b163befffbdfc"
+  instance_type = "t2.micro"
+  instance_name = "ecostream-${var.env_name}"
+}
