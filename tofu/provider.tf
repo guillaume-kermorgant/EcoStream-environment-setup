@@ -5,15 +5,8 @@ terraform {
       version = "~> 5.0"
     }
   }
-
-  backend "http" {
-  }
 }
 
 provider "aws" {
-  region = "eu-west-3"
-}
-
-resource "aws_vpc" "example" {
-  cidr_block = "10.0.0.0/16"
+  region = var.region
 }
