@@ -6,7 +6,8 @@ stages:
 
 variables:
   TOFU_DIR: "tofu"
-  AWS_REGION: $AWS_DEFAULT_REGION
+  TF_VAR_aws_region: $AWS_DEFAULT_REGION
+  TF_VAR_env_name: $ENV_NAME
 
 default:
   image: registry.gitlab.com/gkermo/ecostream/opentofu/gitlab-opentofu:1.1.0-opentofu1.9.0-alpine-amd64
@@ -17,6 +18,8 @@ default:
     tofu init -backend-config="address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}" \
       -backend-config="lock_address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}/lock" \
       -backend-config="unlock_address=https://gitlab.com/api/v4/projects/68895536/terraform/state/${ENV_NAME}/lock" \
+      -backend-config="lock_method=POST" \
+      -backend-config="unlock_method=DELETE" \
       -backend-config="username=${GITLAB_USERNAME}" \
       -backend-config="password=${GITLAB_TOKEN}"
 
