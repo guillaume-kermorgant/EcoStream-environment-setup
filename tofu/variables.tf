@@ -7,3 +7,8 @@ variable "ec2_conf" {
   description = "EC2 instance configuration"
   type        = map(string)
 }
+
+variable "env_name" {
+  description = "Environment name"
+  type        = string
+}
