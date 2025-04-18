@@ -33,7 +33,7 @@ plan:
   stage: plan
   script:
   - |
-    tofu plan -input=false -var-file="tofu.tfvars"
+    tofu plan -input=false
   artifacts:
     paths:
     - $TOFU_DIR/planfile
@@ -42,11 +42,11 @@ plan:
 apply:
   stage: apply
   script:
-  - tofu apply -auto-approve -input=false -var-file="tofu.tfvars"
+  - tofu apply -auto-approve -input=false
   when: manual
 
 destroy:
   stage: destroy
   script:
-  - tofu destroy -auto-approve -input=false -var-file="tofu.tfvars"
+  - tofu destroy -auto-approve -input=false
   when: manual

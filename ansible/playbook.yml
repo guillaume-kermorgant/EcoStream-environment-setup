@@ -1,0 +1,31 @@
+- name: Install K3s and ArgoCD
+  hosts: all
+  become: yes
+  tasks:
+  - name: Install K3s
+    shell: curl -sfL https://get.k3s.io | sh -
+
+  - name: Install kubectl + copy kubeconfig
+    shell: |
+      mkdir -p ~/.kube
+      cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+      chown ubuntu:ubuntu ~/.kube/config
+    become: true
+    become_user: ubuntu
+
+  - name: Install ArgoCD via Helm
+    shell: |
+      kubectl create ns argocd || true
+      helm repo add argo https://argoproj.github.io/argo-helm
+      helm install argocd argo/argo-cd -n argocd
+    become: false
+
+  - name: Apply ArgoCD bootstrap
+    copy:
+      src: ../bootstrap/argo-apps.yaml
+      dest: /tmp/argo-apps.yaml
+    become: false
+
+  - name: Apply bootstrap app
+    shell: kubectl apply -f /tmp/argo-apps.yaml
+    become: false
