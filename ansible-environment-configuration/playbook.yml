@@ -1,0 +1,8 @@
+- name: Setup EKS environment
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: kubeconfig
+    - role: eks_access
+    # - role: argocd
+    # - role: route53  # Optional for now

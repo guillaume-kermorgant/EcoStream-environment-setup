@@ -7,7 +7,9 @@ This directory contains Terraform/Tofu configurations files to deploy the AWS re
 
 This script can be integrated into a CI/CD pipeline.
 
-The configuration files are based on the following tutorial from Terraform website: [Provision an EKS cluster (AWS)](https://developer.hashicorp.com/terraform/tutorials/kubernetes/eks). The code samples provided in this tutorial are licensed under MPL 2.0 which allow modificaton and redistribution of the original code, but only under the condition that users make the entire program available under the same license, that's why we are keeping the same license here.
+The configuration files are based on the following tutorial from Terraform website: [Provision an EKS cluster (AWS)](https://developer.hashicorp.com/terraform/tutorials/kubernetes/eks).
+
+Even if we have quite heavily changed the files and restructured the project, the code samples provided in that Terraform tutorial are licensed under MPL 2.0 which allows modificaton and redistribution of the original code, but only under the condition that users make the entire program available under the same license. That's why we are keeping the same license here.
 
 ## Run locally
 

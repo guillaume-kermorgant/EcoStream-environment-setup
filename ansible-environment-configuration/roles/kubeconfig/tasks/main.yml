@@ -1,0 +1,10 @@
+---
+- name: Configure AWS credentials for eks
+  shell: |
+    export AWS_ACCESS_KEY_ID="{{ aws_access_key_id }}"
+    export AWS_SECRET_ACCESS_KEY="{{ aws_secret_access_key }}"
+    export AWS_DEFAULT_REGION="{{ aws_region }}"
+
+- name: Retrieve EKS cluster information and configure kubeconfig
+  shell: |
+    aws eks update-kubeconfig --region {{ aws_region }} --name {{ eks_cluster_name }} --kubeconfig ~/.kube/config

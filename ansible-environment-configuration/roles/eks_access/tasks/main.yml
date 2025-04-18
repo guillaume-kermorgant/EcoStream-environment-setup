@@ -1,0 +1,26 @@
+- name: Fail if EKS_ADMINS_IAM_PRINCIPAL_ARN is not defined
+  fail:
+    msg: "Environment variable IAM_PRINCIPAL_ARNS must be defined and contain at least one ARN"
+  when: eks_admins_iam_principal_arn | length == 0
+
+- name: Apply ClusterRole and ClusterRoleBinding
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/rbac.yml.j2') }}"
+
+# The Ansible AWS EKS module does not allow to create access entries.
+# I think I could do everything with Terraform instead of using an Ansible playbook, but anyway..
+- name: Create EKS access entry for all IAM principal ARNs
+  shell: |
+    aws eks create-access-entry \
+      --cluster-name {{ eks_cluster_name }} \
+      --principal-arn {{ item }} \
+      --type STANDARD \
+      --user {{ eks_user }} \
+      --kubernetes-groups {{ eks_group }}
+  loop: "{{ eks_admins_iam_principal_arn }}"
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+    AWS_DEFAULT_REGION: "{{ aws_region }}"
+

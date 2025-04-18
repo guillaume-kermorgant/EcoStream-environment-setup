@@ -27,4 +27,7 @@ override.tf.json
 terraform.rc
 
 tofu-infrastructure-provisioning/old-test
+
+ansible-environment-configuration/personal_doc
+
 tofu-k3s-deprecated
