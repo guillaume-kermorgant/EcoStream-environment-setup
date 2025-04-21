@@ -114,15 +114,14 @@ IAMFullAccess
 - apply the tofu configuration files
 
 ```
-# create a tofu.tfvars file to set your AWS access key ID and secret access key
-# and optionnally a few other values
+# [optional] create a tofu.tfvars file to set the AWS region to be used, and the environment name (attached to the EKS cluster)
 cat > tofu.tfvars <<EOF
-AWS_ACCESS_KEY_ID     = ""
-AWS_SECRET_ACCESS_KEY = ""
 aws_region            = "eu-west-3"
 env_name              = "local-dev"
 EOF
-# run 
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+# export your AWS secret access key ID and secret access key and run the tofu script
 tofu init
 tofu apply -var-file="tofu.tfvars"
 ```
@@ -164,7 +163,7 @@ kubernetes   ClusterIP   172.20.0.1   <none>        443/TCP   5m
 
 ### Provide other Users access to the cluster
 
-TODO: create an Ansible playbook to handle these steps
+**The following steps can be automatically done by executing the Ansible playbook from ../ansible-environment-configuration**
 
 **[DEPRECATED]** ~~You can modify the `aws-auth` ConfigMap from the `kube-system` namespace to provide IAM Users or Roles with access to the EKS cluster.~~
 

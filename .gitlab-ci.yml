@@ -5,13 +5,13 @@ stages:
 - destroy
 
 variables:
-  TOFU_DIR: "tofu"
+  TOFU_DIR: "tofu-infrastructure_provisioning"
   TF_VAR_aws_region: $AWS_DEFAULT_REGION
   TF_VAR_env_name: $ENV_NAME
   # TF_LOG: DEBUG
 
 default:
-  image: registry.gitlab.com/gkermo/ecostream/opentofu/gitlab-opentofu:1.1.0-opentofu1.9.0-alpine-amd64
+  image: registry.gitlab.com/gkermo/ecostream/base_images/gitlab-opentofu:1.1.0-opentofu1.9.0-alpine-amd64
   before_script:
   - |
     cd $TOFU_DIR
