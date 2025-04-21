@@ -237,8 +237,18 @@ kubernetes   ClusterIP   172.20.0.1   <none>        443/TCP   20m
 
 ### Destroy the environment
 
+- [NEED TO IMPROVE] tofu does not delete the load balancers created by AWS LBC, so we first need to manually delete the created ingresses:
+
+```
+kubectl delete ingress --all -n ecostream
+```
+
 - in order to destroy every resources that were deployed by tofu, run:
 
 ```
 tofu destroy -var-file="tofu.tfvars"
 ```
+
+**Troubleshooting**
+
+Once it happened that the VPC could not be destroyed by tofu because of some dependencies that could not be deleted. Solution was to delete the VPC manually from AWS console.
