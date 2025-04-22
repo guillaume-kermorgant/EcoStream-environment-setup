@@ -41,34 +41,47 @@ IAMFullAccess
 			"Effect": "Allow",
 			"Action": [
 				"eks:ListEksAnywhereSubscriptions",
+				"acm:DeleteCertificate",
 				"kms:GenerateRandom",
+				"acm:PutAccountConfiguration",
 				"logs:*",
 				"ec2:DescribeAddressesAttribute",
+				"acm:RenewCertificate",
+				"route53:ListHostedZonesByName",
 				"kms:DescribeCustomKeyStores",
 				"kms:DeleteCustomKeyStore",
+				"acm:RequestCertificate",
 				"kms:UpdateCustomKeyStore",
+				"route53:ListResourceRecordSets",
+				"acm:ListCertificates",
 				"kms:CreateKey",
+				"acm:ImportCertificate",
 				"eks:CreateEksAnywhereSubscription",
 				"eks:DescribeAddonVersions",
 				"kms:ConnectCustomKeyStore",
 				"eks:CreateCluster",
 				"ec2:DeleteLaunchTemplate",
+				"route53:CreateHostedZone",
 				"eks:DescribeAddonConfiguration",
-				"kms:ListRetirableGrants",
 				"ec2:DescribeLaunchTemplates",
+				"kms:ListRetirableGrants",
+				"acm:UpdateCertificateOptions",
 				"ec2:DescribeLaunchTemplateVersions",
 				"ec2:RunInstances",
 				"logs:TagResource",
-				"logs:CreateLogGroup",
 				"eks:RegisterCluster",
+				"logs:CreateLogGroup",
 				"kms:CreateCustomKeyStore",
 				"kms:ListKeys",
 				"eks:DescribeClusterVersions",
 				"ec2:CreateLaunchTemplate",
+				"acm:ResendValidationEmail",
 				"kms:ListAliases",
 				"kms:DisconnectCustomKeyStore",
+				"sts:GetCallerIdentity",
 				"eks:ListAccessPolicies",
-				"eks:ListClusters"
+				"eks:ListClusters",
+				"acm:*"
 			],
 			"Resource": "*"
 		},
@@ -119,9 +132,12 @@ cat > tofu.tfvars <<EOF
 aws_region            = "eu-west-3"
 env_name              = "local-dev"
 EOF
+# export your AWS secret access key ID and secret access key
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
-# export your AWS secret access key ID and secret access key and run the tofu script
+# optionnaly export your Route 53 hosted zone ID if you want to use a custom host name
+export TF_VAR_route_53_zone_id="Z09730841U1ZUDX38GYVK"
+# run tofu script
 tofu init
 tofu apply -var-file="tofu.tfvars"
 ```

@@ -1,0 +1,48 @@
+# - name: Generate private key
+#   community.crypto.openssl_privatekey:
+#     path: "/tmp/ecostream.key"
+#     size: 2048
+#     type: RSA
+
+# - name: Generate self-signed certificate
+#   community.crypto.x509_certificate:
+#     path: "/tmp/ecostream.crt"
+#     privatekey_path: "/tmp/ecostream.key"
+#     provider: selfsigned
+
+# - name: "Generate name taf for ACM certificate"
+#   ansible.builtin.set_fact:
+#     acm_certificate_name_tag: "ecostream-{{ lookup('community.general.random_string', length=8) }}"
+
+# - name: Import cert into ACM
+#   community.aws.acm_certificate:
+#     certificate: "{{ lookup('file', '/tmp/ecostream.crt' ) }}"
+#     private_key: "{{ lookup('file', '/tmp/ecostream.key' )  }}"
+#     region: "{{ aws_region }}"
+#     name_tag: "{{ acm_certificate_name_tag }}"
+#   register: acm_result
+
+# - name: Debug ACM acm_result
+#   debug:
+#     msg: "ACM creation result: {{ acm_result }}"
+
+- name: Create namespace "{{ ecostream_namespace }}" on EKS cluster
+  kubernetes.core.k8s:
+    state: present
+    # kubeconfig: "{{ kubeconfig_path }}"
+    api_version: v1
+    kind: Namespace
+    name: "{{ ecostream_namespace }}"
+
+# - name: Store ACM ARN in a ConfigMap
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     definition:
+#       apiVersion: v1
+#       kind: ConfigMap
+#       metadata:
+#         name: ecostream-predeploy-configmap
+#         namespace: "{{ namespace }}"
+#       data:
+#         certificate_arn: "{{ acm_result.certificate_arn }}"
+

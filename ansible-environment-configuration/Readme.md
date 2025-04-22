@@ -6,7 +6,6 @@ The Ansible playbook in this directory configures the EKS cluster and deploys th
 
 - an EKS cluster must have been provisioned using the Tofu files from `../tofu-infrastructure-provisioning`
 - you must have a custom host name
-# TODO: finish configuring host names and explain everything here
 
 
 ## Run the Playbook
@@ -18,8 +17,10 @@ export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
 export AWS_DEFAULT_REGION="eu-west-3"
 export EKS_CLUSTER_NAME="ecostream-local-dev"
+export ECOSTREAM_NAMESPACE="ecostream"
 # you can add a comma separated list of ARNs here if you need to provide access to multiple ARNs
 export EKS_ADMINS_IAM_PRINCIPAL_ARN=""
+
 
 ```
 

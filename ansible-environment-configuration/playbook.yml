@@ -3,6 +3,6 @@
   gather_facts: false
   roles:
     - role: kubeconfig
-    - role: eks_access
+    # - role: eks_access
+    - role: ecostream_namespace
     # - role: argocd
-    # - role: route53  # Optional for now

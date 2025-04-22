@@ -9,4 +9,5 @@ There are two main directories here:
 ## AWS Access
 
 - the access key used by gitlab-ci and passed in to tofu via https://gitlab.com/gkermo/ecostream-environment-setup/-/settings/ci_cd#js-cicd-variables-settings are the ones of ecostream-gitlab-ci user in AWS.
-That user belongs to the ecostream-admins group which has all the required permissions to deploy the infrastructure defined here.
+That user belongs to the ecostream-admins group which has all the required permissions to deploy the infrastructure defined here
+- you can optionnaly pass a host name to the Ansible playbook if you own a domain name, see the instructions in the playbook's Readme

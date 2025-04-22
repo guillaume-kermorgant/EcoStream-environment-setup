@@ -1,6 +1,3 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
 # The following module:
 ## - creates an IAM role that can be assumed by a specific K8S ServiceAccount (aws-load-balancer-controller in kube-system namespace)
 ## - attaches the right IAM permissions so this SA can manage an AWS ALB (Application Load Balancer)
@@ -13,7 +10,7 @@ module "lb_role" {
   attach_load_balancer_controller_policy = true
 
   # enable OIDC trust (heart of IRSA, IAM roles for service accounts)
-  # this tells AWS to 
+  # this tells AWS to trust this OIDC provider
   oidc_providers = {
     main = {
       provider_arn               = module.eks.oidc_provider_arn

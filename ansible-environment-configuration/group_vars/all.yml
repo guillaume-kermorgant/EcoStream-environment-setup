@@ -3,5 +3,6 @@ eks_cluster_name: "{{ lookup('env', 'EKS_CLUSTER_NAME') }}"
 eks_admins_iam_principal_arn: "{{ lookup('env', 'EKS_ADMINS_IAM_PRINCIPAL_ARN').split(',') | map('trim') }}"
 aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
 aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+ecostream_namespace: "{{ lookup('env', 'ECOSTREAM_NAMESPACE') }}"
 eks_user: EcostreamAdmins
 eks_group: EcostreamAdmins
