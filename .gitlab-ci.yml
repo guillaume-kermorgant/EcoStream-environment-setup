@@ -1,11 +1,13 @@
 stages:
-- validate
-- plan
-- apply
-- destroy
+- tofu-validate
+- tofu-plan
+- tofu-apply
+- tofu-destroy
+- ansible-configure
 
 variables:
   TOFU_DIR: "tofu-infrastructure_provisioning"
+  ANSIBLE_DIR: "ansible-environment-configuration"
   TF_VAR_aws_region: $AWS_DEFAULT_REGION
   TF_VAR_env_name: $ENV_NAME
   # TF_LOG: DEBUG
@@ -24,13 +26,13 @@ default:
       -backend-config="username=${GITLAB_USERNAME}" \
       -backend-config="password=${GITLAB_TOKEN}"
 
-validate:
-  stage: validate
+tofu-validate:
+  stage: tofu-validate
   script:
   - tofu validate
 
-plan:
-  stage: plan
+tofu-plan:
+  stage: tofu-plan
   script:
   - |
     tofu plan -input=false
@@ -39,14 +41,21 @@ plan:
     - $TOFU_DIR/planfile
     when: always
 
-apply:
-  stage: apply
+tofu-apply:
+  stage: tofu-apply
   script:
   - tofu apply -auto-approve -input=false
   when: manual
 
-destroy:
-  stage: destroy
+tofu-destroy:
+  stage: tofu-destroy
   script:
   - tofu destroy -auto-approve -input=false
   when: manual
+
+ansible-configure:
+  stage: ansible-configure
+  script:
+  - |
+    cd $ANSIBLE_DIR
+    echo "TODO: run Ansible playbook"

@@ -20,8 +20,11 @@ export EKS_CLUSTER_NAME="ecostream-local-dev"
 export ECOSTREAM_NAMESPACE="ecostream"
 # you can add a comma separated list of ARNs here if you need to provide access to multiple ARNs
 export EKS_ADMINS_IAM_PRINCIPAL_ARN=""
-
-
+# [now required for ArgoCD] custom host name used to access ArgoCD, it must be registered in Route 53 and have a certificate in AWS ACM
+export ECOSTREAM_HOSTNAME=""
+# you need to provide a deploy token for ArgoCD to access the gitops repository, c.f. https://argo-cd.readthedocs.io/en/release-1.8/user-guide/private-repositories/
+export GITLAB_USERNAME=""
+export GITLAB_DEPLOY_TOKEN=""
 ```
 
 - install Ansible, if it is not already installed, following https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html

@@ -1,0 +1,49 @@
+- name: Add ArgoCD Helm repo
+  kubernetes.core.helm_repository:
+    name: argo
+    repo_url: "https://argoproj.github.io/argo-helm"
+
+- name: Create namespace argocd for ArgoCD install
+  kubernetes.core.k8s:
+    state: present
+    api_version: v1
+    kind: Namespace
+    name: "{{ argocd_namespace }}"
+  
+- name: Install latest ArgoCD chart
+  kubernetes.core.helm:
+    name: ecostream-argo
+    chart_ref: argo/argo-cd
+    release_namespace: "{{ argocd_namespace }}"
+    values:
+      global:
+        domain: "{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
+      configs:
+        params:
+          server.insecure: true
+      server:
+        ingress:
+          enabled: true
+          controller: aws
+          ingressClassName: alb
+          annotations:
+            alb.ingress.kubernetes.io/scheme: internal
+            alb.ingress.kubernetes.io/target-type: ip
+            alb.ingress.kubernetes.io/backend-protocol: HTTP
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
+            alb.ingress.kubernetes.io/ssl-redirect: '443'
+          aws:
+            serviceType: ClusterIP
+            backendProtocolVersion: GRPC
+
+- name: Provide ArgoCD with GitLab token so it can access GitOps repo
+  kubernetes.core.k8s:
+    state: present
+    template:
+      path: '../templates/argocd-repository-secret.yml.j2'
+
+- name: Deploy Ecostream Application
+  kubernetes.core.k8s:
+    state: present
+    template:
+      path: '../templates/ecostream-application.yml.j2'

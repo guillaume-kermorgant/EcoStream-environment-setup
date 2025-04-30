@@ -6,3 +6,8 @@ aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
 ecostream_namespace: "{{ lookup('env', 'ECOSTREAM_NAMESPACE') }}"
 eks_user: EcostreamAdmins
 eks_group: EcostreamAdmins
+argocd_namespace: argocd
+argocd_hostname: "argocd.{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
+gitlab_username: "{{ lookup('env', 'GITLAB_USERNAME') }}"
+gitlab_deploy_token: "{{ lookup('env', 'GITLAB_DEPLOY_TOKEN') }}"
+gitops_repo_url: https://gitlab.com/gkermo/ecostream-gitops

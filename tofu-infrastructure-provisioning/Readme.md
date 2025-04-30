@@ -135,7 +135,8 @@ EOF
 # export your AWS secret access key ID and secret access key
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
-# optionnaly export your Route 53 hosted zone ID if you want to use a custom host name
+# you need a custom host name registered in Route 53, and set the Route 53 hosted zone id here
+# TODO: make that optional. Maybe, use nginx Ingress controller with Let's Encrypt instead of AWS LBC and ACM
 export TF_VAR_route_53_zone_id="Z09730841U1ZUDX38GYVK"
 # run tofu script
 tofu init

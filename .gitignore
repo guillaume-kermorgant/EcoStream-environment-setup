@@ -27,6 +27,7 @@ override.tf.json
 terraform.rc
 
 tofu-infrastructure-provisioning/old-test
+tofu-infrastructure-provisioning/personal_doc
 
 ansible-environment-configuration/personal_doc
 

@@ -16,5 +16,5 @@ variable "env_name" {
 variable "route_53_zone_id" {
   description = "[Optional] Route 53 hosted zone id, required for using custom host name for EcoStream"
   type        = string
-  default     = null
+  default     = ""
 }
