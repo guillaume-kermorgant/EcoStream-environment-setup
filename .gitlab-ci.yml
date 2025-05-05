@@ -87,6 +87,9 @@ ansible-configure:
     pip install openshift kubernetes
     pip install awscli
     aws --version
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    chmod 700 get_helm.sh
+    ./get_helm.sh
     ansible-galaxy collection install community.aws
     ansible-galaxy collection install kubernetes.core
     echo "Done executing before_script..."
