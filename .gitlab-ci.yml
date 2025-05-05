@@ -6,6 +6,8 @@ stages:
 - ansible-configure
 
 variables:
+  TOFU_IMAGE: "registry.gitlab.com/components/opentofu/gitlab-opentofu:1.1.0-opentofu1.9.0-alpine"
+  ANSIBLE_IMAGE: "registry.gitlab.com/gkermo/ecostream/base_images/alpine-ansible:2.17.0-amd64"
   TOFU_DIR: "tofu-infrastructure-provisioning"
   ANSIBLE_DIR: "ansible-environment-configuration"
   TF_VAR_aws_region: $AWS_DEFAULT_REGION
@@ -13,8 +15,11 @@ variables:
   TF_VAR_route_53_zone_id: $ROUTE_53_ZONE_ID
   # TF_LOG: DEBUG
 
-default:
-  image: registry.gitlab.com/gkermo/ecostream/base_images/gitlab-opentofu:1.1.0-opentofu1.9.0-alpine-amd64
+before_script:
+- |
+  echo "Install AWS cli"
+
+.tofu_before_script: &tofu_before_script
   before_script:
   - |
     cd $TOFU_DIR
@@ -28,12 +33,16 @@ default:
       -backend-config="password=${GITLAB_TOKEN}"
 
 tofu-validate:
+  image: $TOFU_IMAGE
   stage: tofu-validate
+  <<: *tofu_before_script
   script:
   - tofu validate
 
 tofu-plan:
+  image: $TOFU_IMAGE
   stage: tofu-plan
+  <<: *tofu_before_script
   script:
   - |
     tofu plan -input=false
@@ -43,35 +52,38 @@ tofu-plan:
     when: always
 
 tofu-apply:
+  image: $TOFU_IMAGE
   stage: tofu-apply
+  <<: *tofu_before_script
   script:
-  - tofu apply -auto-approve -input=false
+  - |
+    apk add --no-cache python3 py3-pip
+    pip3 install --upgrade pip
+    pip3 install awscli
+    aws --version
+    tofu apply -auto-approve -input=false
   when: manual
 
 tofu-destroy:
+  image: $TOFU_IMAGE
   stage: tofu-destroy
+  <<: *tofu_before_script
   script:
   - tofu destroy -auto-approve -input=false
   when: manual
 
 ansible-configure:
+  image: $ANSIBLE_IMAGE
+  before_script:
+  - |
+    cd $ANSIBLE_DIR
+    apk add --no-cache python3 py3-pip
+    pip3 install --upgrade pip
+    pip3 install awscli
+    ansible-galaxy collection install community.aws
+    ansible-galaxy collection install kubernetes.core
   stage: ansible-configure
   script:
   - |
-    cd $ANSIBLE_DIR
     ansible-playbook playbook.yml
   when: manual
-
-# TO PASS to Ansible playbook:
-# export AWS_ACCESS_KEY_ID=""
-# export AWS_SECRET_ACCESS_KEY=""
-# export AWS_DEFAULT_REGION="eu-west-3"
-# export EKS_CLUSTER_NAME="ecostream-local-dev"
-# export ECOSTREAM_NAMESPACE="ecostream"
-# # you can add a comma separated list of ARNs here if you need to provide access to multiple ARNs
-# export EKS_ADMINS_IAM_PRINCIPAL_ARN=""
-# # [now required for ArgoCD] custom host name used to access ArgoCD, it must be registered in Route 53 and have a certificate in AWS ACM
-# export ECOSTREAM_HOSTNAME=""
-# # you need to provide a deploy token for ArgoCD to access the gitops repository, c.f. https://argo-cd.readthedocs.io/en/release-1.8/user-guide/private-repositories/
-# export GITLAB_USERNAME=""
-# export GITLAB_DEPLOY_TOKEN=""
