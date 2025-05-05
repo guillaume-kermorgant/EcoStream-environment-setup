@@ -58,8 +58,10 @@ tofu-apply:
   script:
   - |
     apk add --no-cache python3 py3-pip
-    pip3 install --upgrade pip
-    pip3 install awscli
+    python3 -m venv /tmp/venv
+    . /tmp/venv/bin/activate
+    pip install --upgrade pip
+    pip install awscli
     aws --version
     tofu apply -auto-approve -input=false
   when: manual
@@ -78,8 +80,11 @@ ansible-configure:
   - |
     cd $ANSIBLE_DIR
     apk add --no-cache python3 py3-pip
-    pip3 install --upgrade pip
-    pip3 install awscli
+    python3 -m venv /tmp/venv
+    . /tmp/venv/bin/activate
+    pip install --upgrade pip
+    pip install awscli
+    aws --version
     ansible-galaxy collection install community.aws
     ansible-galaxy collection install kubernetes.core
   stage: ansible-configure
