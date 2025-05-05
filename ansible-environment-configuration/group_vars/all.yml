@@ -1,5 +1,5 @@
 aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
-eks_cluster_name: "{{ lookup('env', 'EKS_CLUSTER_NAME') }}"
+eks_cluster_name: "ecostream-{{ lookup('env', 'ENV_NAME') }}"
 eks_admins_iam_principal_arn: "{{ lookup('env', 'EKS_ADMINS_IAM_PRINCIPAL_ARN').split(',') | map('trim') }}"
 aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
 aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
@@ -9,5 +9,5 @@ eks_group: EcostreamAdmins
 argocd_namespace: argocd
 argocd_hostname: "argocd.{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
 gitlab_username: "{{ lookup('env', 'GITLAB_USERNAME') }}"
-gitlab_deploy_token: "{{ lookup('env', 'GITLAB_DEPLOY_TOKEN') }}"
+gitlab_token: "{{ lookup('env', 'GITLAB_TOKEN') }}"
 gitops_repo_url: https://gitlab.com/gkermo/ecostream-gitops

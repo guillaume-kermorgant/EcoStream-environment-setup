@@ -5,15 +5,15 @@ terraform {
 
   # variables are passed in from .gitlab-ci.yml
   # comment this to run locally
-  #  backend "http" {
-  #   address = ""
-  #   lock_address = ""
-  #   unlock_address = ""
-  #   username = ""
-  #   password = ""
-  #   lock_method    = "POST"
-  #   unlock_method  = "DELETE"
-  # }
+   backend "http" {
+    address = ""
+    lock_address = ""
+    unlock_address = ""
+    username = ""
+    password = ""
+    lock_method    = "POST"
+    unlock_method  = "DELETE"
+  }
 
   required_providers {
     aws = {

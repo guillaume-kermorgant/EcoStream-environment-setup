@@ -10,6 +10,7 @@ variables:
   ANSIBLE_DIR: "ansible-environment-configuration"
   TF_VAR_aws_region: $AWS_DEFAULT_REGION
   TF_VAR_env_name: $ENV_NAME
+  TF_VAR_route_53_zone_id: $ROUTE_53_ZONE_ID
   # TF_LOG: DEBUG
 
 default:
@@ -58,4 +59,19 @@ ansible-configure:
   script:
   - |
     cd $ANSIBLE_DIR
-    echo "TODO: run Ansible playbook"
+    ansible-playbook playbook.yml
+  when: manual
+
+# TO PASS to Ansible playbook:
+# export AWS_ACCESS_KEY_ID=""
+# export AWS_SECRET_ACCESS_KEY=""
+# export AWS_DEFAULT_REGION="eu-west-3"
+# export EKS_CLUSTER_NAME="ecostream-local-dev"
+# export ECOSTREAM_NAMESPACE="ecostream"
+# # you can add a comma separated list of ARNs here if you need to provide access to multiple ARNs
+# export EKS_ADMINS_IAM_PRINCIPAL_ARN=""
+# # [now required for ArgoCD] custom host name used to access ArgoCD, it must be registered in Route 53 and have a certificate in AWS ACM
+# export ECOSTREAM_HOSTNAME=""
+# # you need to provide a deploy token for ArgoCD to access the gitops repository, c.f. https://argo-cd.readthedocs.io/en/release-1.8/user-guide/private-repositories/
+# export GITLAB_USERNAME=""
+# export GITLAB_DEPLOY_TOKEN=""

@@ -16,7 +16,7 @@ The Ansible playbook in this directory configures the EKS cluster and deploys th
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
 export AWS_DEFAULT_REGION="eu-west-3"
-export EKS_CLUSTER_NAME="ecostream-local-dev"
+export ENV_NAME="local-dev"
 export ECOSTREAM_NAMESPACE="ecostream"
 # you can add a comma separated list of ARNs here if you need to provide access to multiple ARNs
 export EKS_ADMINS_IAM_PRINCIPAL_ARN=""
@@ -24,7 +24,7 @@ export EKS_ADMINS_IAM_PRINCIPAL_ARN=""
 export ECOSTREAM_HOSTNAME=""
 # you need to provide a deploy token for ArgoCD to access the gitops repository, c.f. https://argo-cd.readthedocs.io/en/release-1.8/user-guide/private-repositories/
 export GITLAB_USERNAME=""
-export GITLAB_DEPLOY_TOKEN=""
+export GITLAB_TOKEN=""
 ```
 
 - install Ansible, if it is not already installed, following https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
