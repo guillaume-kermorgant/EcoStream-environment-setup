@@ -90,5 +90,6 @@ ansible-configure:
   stage: ansible-configure
   script:
   - |
+    . /tmp/venv/bin/activate
     ansible-playbook playbook.yml
   when: manual
