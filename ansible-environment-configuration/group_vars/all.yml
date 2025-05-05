@@ -4,6 +4,7 @@ eks_admins_iam_principal_arn: "{{ lookup('env', 'EKS_ADMINS_IAM_PRINCIPAL_ARN').
 aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
 aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
 ecostream_namespace: "{{ lookup('env', 'ECOSTREAM_NAMESPACE') }}"
+ecostream_certificate_arn: "{{ lookup('env', 'ECOSTREAM_CERTIFICATE_ARN') }}"
 eks_user: EcostreamAdmins
 eks_group: EcostreamAdmins
 argocd_namespace: argocd

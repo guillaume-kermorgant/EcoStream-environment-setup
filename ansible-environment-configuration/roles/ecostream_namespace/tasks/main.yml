@@ -5,3 +5,37 @@
     api_version: v1
     kind: Namespace
     name: "{{ ecostream_namespace }}"
+
+- name: Create EcoStream Secret on EKS cluster
+  kubernetes.core.k8s:
+    state: present
+    template:
+      path: '../templates/ecostream-secret.yml.j2'
+
+- name: Generate dockerconfigjson content for Ecostream Secret
+  set_fact:
+    dockerconfigjson_content: >-
+      {{
+        {
+          "auths": {
+            "https://registry.gitlab.com": {
+              "username": {{ gitlab_username }},
+              "password": {{ gitlab_token }},
+              "auth": ({{ gitlab_username }} + ":" + {{ gitlab_token }}) | b64encode
+            }
+          }
+        } | to_json | b64encode
+      }}
+
+- name: Create Ecostream Secret
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ ecostream_namespace  }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "ecostream-container-registry-secret"
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: "{{ dockerconfigjson_content }}"

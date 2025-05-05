@@ -15,26 +15,35 @@
     name: ecostream-argo
     chart_ref: argo/argo-cd
     release_namespace: "{{ argocd_namespace }}"
-    values:
-      global:
-        domain: "{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
-      configs:
-        params:
-          server.insecure: true
-      server:
-        ingress:
-          enabled: true
-          controller: aws
-          ingressClassName: alb
-          annotations:
-            alb.ingress.kubernetes.io/scheme: internal
-            alb.ingress.kubernetes.io/target-type: ip
-            alb.ingress.kubernetes.io/backend-protocol: HTTP
-            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
-            alb.ingress.kubernetes.io/ssl-redirect: '443'
-          aws:
-            serviceType: ClusterIP
-            backendProtocolVersion: GRPC
+    # we used to deploy an Ingress with these values, but the Ingress was not accessible from outside of the VPC
+    # so now we deploy an Ingress manually
+    # there must be a way to configure that with ArgoCD Helm chart, though
+    # values:
+    #   global:
+    #     domain: "{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
+    #   configs:
+    #     params:
+    #       server.insecure: true
+    #   server:
+    #     ingress:
+    #       enabled: true
+    #       controller: aws
+    #       ingressClassName: alb
+    #       annotations:
+    #         alb.ingress.kubernetes.io/scheme: internal
+    #         alb.ingress.kubernetes.io/target-type: ip
+    #         alb.ingress.kubernetes.io/backend-protocol: HTTP
+    #         alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
+    #         alb.ingress.kubernetes.io/ssl-redirect: '443'
+    #       aws:
+    #         serviceType: ClusterIP
+    #         backendProtocolVersion: GRPC
+
+- name: Deploy ArgoCD server Ingress
+  kubernetes.core.k8s:
+    state: present
+    template:
+      path: '../templates/argocd-server-ingress.yml.j2'
 
 - name: Provide ArgoCD with GitLab token so it can access GitOps repo
   kubernetes.core.k8s:
@@ -47,3 +56,4 @@
     state: present
     template:
       path: '../templates/ecostream-application.yml.j2'
+
