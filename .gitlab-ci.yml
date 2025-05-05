@@ -95,6 +95,7 @@ ansible-configure:
   - |
     echo "Executing script..."
     . /tmp/venv/bin/activate
-    ansible-playbook playbook.yml
+    # need to specify a custom inventory file so Ansible uses the right Python interpreter
+    ansible-playbook -i ./inventory/gitlab-inventory.ini playbook.yml
     echo "Done executing script..."
   when: manual
