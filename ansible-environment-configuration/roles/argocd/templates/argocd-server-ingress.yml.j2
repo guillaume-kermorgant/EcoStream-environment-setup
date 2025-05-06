@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-3:531920760589:certificate/f1f058cf-9e44-4fc4-bada-048e7a4abf2e
+    alb.ingress.kubernetes.io/backend-protocol: HTTPS
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    external-dns.alpha.kubernetes.io/hostname: "{{ argocd_hostname }}"
+  name: ecostream-argocd
+  namespace: "{{ argocd_namespace }}"
+spec:
+  rules:
+  - host: "{{ argocd_hostname }}"
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: ecostream-argo-argocd-server
+            port:
+              number: 443
+        pathType: Prefix
+  tls:
+  - hosts:
+    - "{{ argocd_hostname }}"
