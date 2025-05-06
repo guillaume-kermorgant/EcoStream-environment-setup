@@ -1,0 +1,11 @@
+- name: "Post deploy tasks"
+  debug:
+    msg:
+      - "Done executing Ansible playbook for configuring the EKS cluster for EcoStream"
+      - "*** ArgoCD ***"
+      - "UI URL: https://{{ argocd_hostname }}"
+      - "After reaching the UI the first time you can login with username: admin and the random password generated during the installation. You can find the password by running:"
+      - "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
+      - "*** EcoStream ***"
+      - "Visualizer URL: https://visualizer.{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
+      - "TODO: for now provided Visualizer URL is hardcoded in Ansible playbook. We should retrieve it dynamically instead."

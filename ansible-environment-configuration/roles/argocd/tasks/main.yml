@@ -15,15 +15,17 @@
     name: ecostream-argo
     chart_ref: argo/argo-cd
     release_namespace: "{{ argocd_namespace }}"
+    values:
+# disable ArgoCD internal HTTP redirect (safe because encryption is handled by ALB)
+# otherwise there's an infinite redirect loop ALB <-> ArgoCD
+      configs:
+        params:
+          server.insecure: true
     # we used to deploy an Ingress with these values, but the Ingress was not accessible from outside of the VPC
     # so now we deploy an Ingress manually
     # there must be a way to configure that with ArgoCD Helm chart, though
-    # values:
-    #   global:
+    #  global:
     #     domain: "{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
-    #   configs:
-    #     params:
-    #       server.insecure: true
     #   server:
     #     ingress:
     #       enabled: true
@@ -43,7 +45,7 @@
   kubernetes.core.k8s:
     state: present
     template:
-      path: '../templates/argocd-server-ingress.yml.j2'
+      path: '../templates/argocd-server-svc-and-ingress.yml.j2'
 
 - name: Provide ArgoCD with GitLab token so it can access GitOps repo
   kubernetes.core.k8s:

@@ -6,3 +6,4 @@
     - role: eks_access
     - role: ecostream_namespace
     - role: argocd
+    - role: post_deploy
