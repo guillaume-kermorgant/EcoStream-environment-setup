@@ -56,4 +56,3 @@
     state: present
     template:
       path: '../templates/ecostream-application.yml.j2'
-

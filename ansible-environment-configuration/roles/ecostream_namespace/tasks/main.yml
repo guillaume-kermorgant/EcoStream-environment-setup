@@ -13,9 +13,9 @@
         {
           "auths": {
             "https://registry.gitlab.com": {
-              "username": {{ gitlab_username }},
-              "password": {{ gitlab_token }},
-              "auth": ({{ gitlab_username }} + ":" + {{ gitlab_token }}) | b64encode
+              "username": gitlab_username,
+              "password": gitlab_token,
+              "auth": (gitlab_username + ":" + gitlab_token) | b64encode
             }
           }
         } | to_json | b64encode
