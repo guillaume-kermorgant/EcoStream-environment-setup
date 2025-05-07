@@ -20,7 +20,7 @@
 # otherwise there's an infinite redirect loop ALB <-> ArgoCD
       configs:
         params:
-          server.insecure: true
+          "server.insecure: true"
     # we used to deploy an Ingress with these values, but the Ingress was not accessible from outside of the VPC
     # so now we deploy an Ingress manually
     # there must be a way to configure that with ArgoCD Helm chart, though
@@ -41,6 +41,10 @@
     #         serviceType: ClusterIP
     #         backendProtocolVersion: GRPC
 
+# TODO: ingress returns 502 Bad Gateway at first
+# We need to run the following command to make it work:
+# helm upgrade --install ecostream-argo argo/argo-cd --namespace argocd --set config.params.server.insecure=true
+# might be caused by this: https://github.com/argoproj/argo-helm/issues/1780
 - name: Deploy ArgoCD server Ingress
   kubernetes.core.k8s:
     state: present
