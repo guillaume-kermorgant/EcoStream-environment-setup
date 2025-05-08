@@ -152,9 +152,9 @@ Outputs:
 
 aws_region = "eu-west-3"
 cluster_endpoint = "https://03AC57322BA72D2A6C5C4BAA34A8CCFE.gr7.eu-west-3.eks.amazonaws.com"
-cluster_name = "ecostream-local-dev"
+cluster_name = "ecostream-dev"
 cluster_security_group_id = "sg-0b4a2065d80442fa3"
-env_name = "local-dev"
+env_name = "dev"
 ```
 
 - update kubeconfig file with your cluster information:
@@ -171,7 +171,7 @@ aws sts get-caller-identity
     "Account": "59384857489",
     "Arn": "arn:aws:iam::59384857489:user/ecostream-user"
 }
-aws eks update-kubeconfig --region eu-west-3 --name ecostream-local-dev
+aws eks update-kubeconfig --region eu-west-3 --name ecostream-dev
 # check access to the EKS cluster with kubectl
 kubectl get svc
 NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE

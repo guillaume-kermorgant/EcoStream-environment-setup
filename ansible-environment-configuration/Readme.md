@@ -16,7 +16,7 @@ The Ansible playbook in this directory configures the EKS cluster and deploys th
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
 export AWS_DEFAULT_REGION="eu-west-3"
-export ENV_NAME="local-dev"
+export ENV_NAME="dev"
 export ECOSTREAM_NAMESPACE="ecostream"
 # you can add a comma separated list of ARNs here if you need to provide access to multiple ARNs
 export EKS_ADMINS_IAM_PRINCIPAL_ARN=""
@@ -26,7 +26,7 @@ export ECOSTREAM_HOSTNAME=""
 export GITLAB_USERNAME=""
 export GITLAB_TOKEN=""
 ```
-
+xR
 - install Ansible, if it is not already installed, following https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 
 - install required Ansible collections:
