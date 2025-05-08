@@ -5,15 +5,15 @@ terraform {
 
   # variables are passed in from .gitlab-ci.yml
   # comment this to run locally
-   backend "http" {
-    address = ""
-    lock_address = ""
-    unlock_address = ""
-    username = ""
-    password = ""
-    lock_method    = "POST"
-    unlock_method  = "DELETE"
-  }
+  #  backend "http" {
+  #   address = ""
+  #   lock_address = ""
+  #   unlock_address = ""
+  #   username = ""
+  #   password = ""
+  #   lock_method    = "POST"
+  #   unlock_method  = "DELETE"
+  # }
 
   required_providers {
     aws = {
@@ -55,22 +55,22 @@ terraform {
 provider "aws" {
   region = var.aws_region
   default_tags {
-   tags = {
-     Environment = "ecostream-eks-${var.env_name}"
-   }
- }
+    tags = {
+      Environment = "ecostream-eks-${var.env_name}"
+    }
+  }
 
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_name
 }
 
 provider "kubernetes" {
   alias                  = "eks"
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  exec {
-    api_version = "client.authentication.k8s.io/v1"
-    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-    command     = "aws"
-  }
+  token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
 provider "helm" {
@@ -79,10 +79,7 @@ provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-    exec {
-      api_version = "client.authentication.k8s.io/v1"
-      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-      command     = "aws"
-    }
+    token                  = data.aws_eks_cluster_auth.cluster.token
   }
+  
 }

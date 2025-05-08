@@ -2,25 +2,20 @@
   kubernetes.core.helm_repository:
     name: argo
     repo_url: "https://argoproj.github.io/argo-helm"
-
-- name: Create namespace argocd for ArgoCD install
-  kubernetes.core.k8s:
-    state: present
-    api_version: v1
-    kind: Namespace
-    name: "{{ argocd_namespace }}"
   
-- name: Install latest ArgoCD chart
+- name: Install ArgoCD chart
   kubernetes.core.helm:
     name: ecostream-argo
     chart_ref: argo/argo-cd
+    chart_version: "7.9.0"
     release_namespace: "{{ argocd_namespace }}"
+    create_namespace: true
     values:
 # disable ArgoCD internal HTTP redirect (safe because encryption is handled by ALB)
 # otherwise there's an infinite redirect loop ALB <-> ArgoCD
       configs:
         params:
-          "server.insecure: true"
+          server.insecure: true
     # we used to deploy an Ingress with these values, but the Ingress was not accessible from outside of the VPC
     # so now we deploy an Ingress manually
     # there must be a way to configure that with ArgoCD Helm chart, though
@@ -41,18 +36,11 @@
     #         serviceType: ClusterIP
     #         backendProtocolVersion: GRPC
 
-- name: Wait for all ArgoCD pods to be running
-  kubernetes.core.k8s_info:
-    kind: Pod
+- name: Wait for ArgoCD pods
+  ansible.builtin.include_tasks: roles/common/tasks/wait_for_pods.yml
+  vars:
     namespace: "{{ argocd_namespace }}"
-    label_selectors:
-      - app.kubernetes.io/part-of=argocd
-  register: argocd_pods
-  until: >
-    argocd_pods.resources | length > 0 and
-    (argocd_pods.resources | map(attribute='status.phase') | list) is subset(['Running'])
-  retries: 30
-  delay: 10
+    label_selector: "app.kubernetes.io/part-of=argocd"
 
 # TODO: ingress returns 502 Bad Gateway at first
 # We need to run the following command to make it work:

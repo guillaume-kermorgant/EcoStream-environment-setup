@@ -1,0 +1,151 @@
+# TODO: retrieve Prometheus svc dynamically here instead of hardcoding it
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: grafana-setup
+  namespace: "{{ monitoring_namespace }}"
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+      - name: "{{ gitlab_container_registry_secret_name }}"
+      containers:
+      - name: setup
+        image: "{{ grafana_setup_job_image }}"
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -x
+            apk add jq
+            echo "Waiting for Grafana to be up..."
+            until curl -s -u "$GRAFANA_USER:$GRAFANA_PASSWORD" http://grafana.monitoring.svc.cluster.local/api/health | grep '"database"'; do sleep 5; done
+
+            echo "Adding Prometheus datasource..."
+            curl -s -X POST http://grafana.monitoring.svc.cluster.local/api/datasources \
+              -u "$GRAFANA_USER:$GRAFANA_PASSWORD" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "name": "Prometheus",
+                "type": "prometheus",
+                "access": "proxy",
+                "url": "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090",
+                "basicAuth": false,
+                "isDefault": true
+              }'
+
+            echo "Importing Prometheus dashboard..."
+            curl -s -X POST http://grafana.monitoring.svc.cluster.local/api/dashboards/import \
+              -u "$GRAFANA_USER:$GRAFANA_PASSWORD" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "dashboard": {
+                  "id": "${GRAFANA_DASHBOARD_ID}",
+                  "uid": null,
+                  "title": "Prometheus 2.0 Stats",
+                  "tags": [],
+                  "timezone": "browser",
+                  "schemaVersion": 16,
+                  "version": 0
+                },
+                "overwrite": true,
+                "inputs": [
+                  {
+                    "name": "DS_PROMETHEUS",
+                    "type": "datasource",
+                    "pluginId": "prometheus",
+                    "value": "Prometheus"
+                  }
+                ]
+              }'
+
+            # TODO: Retrieve Grafana folders with
+            # curl -s -u "$GRAFANA_USER:$GRAFANA_PASSWORD" http://grafana.monitoring.svc.cluster.local/api/folders
+            # or create one with
+            # curl -s -X POST http://grafana.monitoring.svc.cluster.local/api/folders \
+            # -u "$GRAFANA_USER:$GRAFANA_PASSWORD" \
+            # -H "Content-Type: application/json" \
+            # -d '{
+            #   "title": "Alerts",
+            #   "uid": "alerts"
+            # }'
+            echo "Creating CPU alert..."
+            curl -s -X POST http://grafana.monitoring.svc.cluster.local/api/v1/provisioning/alert-rules \
+              -u "$GRAFANA_USER:$GRAFANA_PASSWORD" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "title": "High CPU Usage",
+                "condition": "A",
+                "data": [
+                  {
+                    "refId": "A",
+                    "queryType": "",
+                    "relativeTimeRange": {
+                      "from": 300,
+                      "to": 0
+                    },
+                    "datasourceUid": "Prometheus",
+                    "model": {
+                      "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+                      "interval": "",
+                      "intervalFactor": 2,
+                      "legendFormat": "",
+                      "refId": "A"
+                    }
+                  }
+                ],
+                "noDataState": "NoData",
+                "execErrState": "Error",
+                "for": "2m",
+                "annotations": {},
+                "labels": {},
+                "isPaused": false
+              }'
+
+            echo "Creating Memory alert..."
+            curl -s -X POST http://grafana.monitoring.svc.cluster.local/api/v1/provisioning/alert-rules \
+              -u "$GRAFANA_USER:$GRAFANA_PASSWORD" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "title": "High Memory Usage",
+                "condition": "A",
+                "data": [
+                  {
+                    "refId": "A",
+                    "queryType": "",
+                    "relativeTimeRange": {
+                      "from": 300,
+                      "to": 0
+                    },
+                    "datasourceUid": "Prometheus",
+                    "model": {
+                      "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+                      "interval": "",
+                      "intervalFactor": 2,
+                      "legendFormat": "",
+                      "refId": "A"
+                    }
+                  }
+                ],
+                "noDataState": "NoData",
+                "execErrState": "Error",
+                "for": "2m",
+                "annotations": {},
+                "labels": {},
+                "isPaused": false
+              }'
+
+            echo "Grafana setup complete."
+        env:
+        - name: GRAFANA_USER
+          valueFrom:
+            secretKeyRef:
+              name: "{{ grafana_admin_secret_name }}"
+              key: admin-user
+        - name: GRAFANA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ grafana_admin_secret_name }}"
+              key: admin-password
+        - name: GRAFANA_DASHBOARD_ID
+          value: "{{ grafana_dashboard_id }}"
+      restartPolicy: OnFailure

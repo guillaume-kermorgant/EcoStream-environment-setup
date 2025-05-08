@@ -231,7 +231,7 @@ EOF
 
 ```
 aws eks create-access-entry \
-    --cluster-name ecostream-local-dev \
+    --cluster-name ecostream-dev \
     --principal-arn arn:aws:iam::531920760589:role/aws-reserved/sso.amazonaws.com/eu-west-3/AWSReservedSSO_AdministratorAccess_76056229cd03f2ac \
     --type STANDARD \
     --user EcostreamAdmins \

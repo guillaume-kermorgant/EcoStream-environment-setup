@@ -1,0 +1,11 @@
+- name: Wait for pods to be running in namespace {{ namespace }} with selector {{ label_selector }}
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: "{{ namespace }}"
+    label_selectors:
+    - "{{ label_selector }}"
+  register: wait_pods
+  until: >
+    wait_pods.resources | length > 0 and (wait_pods.resources | map(attribute='status.phase') | list) is subset(['Running'])
+  retries: "{{ retries | default(30) }}"
+  delay: "{{ delay | default(5) }}"

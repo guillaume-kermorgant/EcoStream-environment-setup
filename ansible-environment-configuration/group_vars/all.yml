@@ -1,14 +1,29 @@
+# General parameters
 aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
 eks_cluster_name: "ecostream-{{ lookup('env', 'ENV_NAME') }}"
-eks_admins_iam_principal_arn: "{{ lookup('env', 'EKS_ADMINS_IAM_PRINCIPAL_ARN').split(',') | map('trim') }}"
 aws_access_key_id: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
 aws_secret_access_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+eks_admins_iam_principal_arn: "{{ lookup('env', 'EKS_ADMINS_IAM_PRINCIPAL_ARN').split(',') | map('trim') }}"
 ecostream_namespace: "{{ lookup('env', 'ECOSTREAM_NAMESPACE') }}"
 ecostream_certificate_arn: "{{ lookup('env', 'ECOSTREAM_CERTIFICATE_ARN') }}"
 eks_user: EcostreamAdmins
 eks_group: EcostreamAdmins
-argocd_namespace: argocd
-argocd_hostname: "argocd.{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
 gitlab_username: "{{ lookup('env', 'GITLAB_USERNAME') }}"
 gitlab_token: "{{ lookup('env', 'GITLAB_TOKEN') }}"
 gitops_repo_url: https://gitlab.com/gkermo/ecostream-gitops
+gitlab_container_registry_secret_name: "ecostream-container-registry-secret"
+
+# GitOps
+argocd_namespace: argocd
+argocd_hostname: "argocd.{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
+
+# Monitoring
+monitoring_namespace: "monitoring"
+grafana_admin_secret_name: "grafana-admin-secret"
+grafana_hostname: "grafana.{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
+grafana_setup_job_image: "registry.gitlab.com/gkermo/ecostream/base_images/alpine:3.19-amd64"
+## Node Exporter Full https://grafana.com/grafana/dashboards/1860-node-exporter-full/
+grafana_dashboard_id: 1860
+## Add an alert on CPU or memory usage - c.f. prometheus_grafana role fo the thresholds
+grafana_alert_cpu: true
+grafana_alert_memory: true

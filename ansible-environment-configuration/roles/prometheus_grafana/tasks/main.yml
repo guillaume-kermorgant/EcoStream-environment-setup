@@ -1,0 +1,105 @@
+- block:
+  - block:
+
+    - name: "Add Prometheus Helm repo"
+      kubernetes.core.helm_repository:
+        name: prometheus-community
+        repo_url: https://prometheus-community.github.io/helm-charts
+
+    - name: "Install Prometheus chart"
+      kubernetes.core.helm:
+        name: prometheus
+        chart_ref: prometheus-community/kube-prometheus-stack
+        chart_version: "72.1.1"
+        release_namespace: "{{ monitoring_namespace }}"
+        create_namespace: true
+
+
+  - block:
+    - name: "Add Grafana Helm repo"
+      kubernetes.core.helm_repository:
+        name: grafana
+        repo_url: https://grafana.github.io/helm-charts
+
+    - name: Generate random admin password for Grafana
+      set_fact:
+        grafana_admin_password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
+
+    - name: Create Secret for Grafana admin credentials
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ grafana_admin_secret_name }}"
+            namespace: "{{ monitoring_namespace }}"
+          type: Opaque
+          stringData:
+            admin-user: admin
+            admin-password: "{{ grafana_admin_password }}"
+
+    - name: "Install Grafana chart with admin credentials"
+      kubernetes.core.helm:
+        name: grafana
+        chart_ref: grafana/grafana
+        chart_version: "9.0.0"
+        release_namespace: "{{ monitoring_namespace }}"
+        values:
+          admin:
+            existingSecret: grafana-admin-secret
+          ingress:
+            enabled: true
+            annotations:
+              kubernetes.io/ingress.class: alb
+              alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-3:531920760589:certificate/f1f058cf-9e44-4fc4-bada-048e7a4abf2e
+              alb.ingress.kubernetes.io/backend-protocol: HTTP
+              alb.ingress.kubernetes.io/target-type: ip
+              alb.ingress.kubernetes.io/scheme: internet-facing
+              alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+              external-dns.alpha.kubernetes.io/hostname: "{{ grafana_hostname }}"
+            hosts:
+              - "{{ grafana_hostname }}"
+            paths:
+              - /
+            tls:
+              - hosts:
+                  - "{{ grafana_hostname }}"
+
+    - block:
+      - name: Get the docker config secret from {{ ecostream_namespace }} namespace
+        kubernetes.core.k8s_info:
+          kind: Secret
+          namespace: "{{ ecostream_namespace }}"
+          name: "{{ gitlab_container_registry_secret_name }}"
+        register: registry_secret
+
+      - name: Copy the secret to {{ monitoring_namespace }} namespace
+        kubernetes.core.k8s:
+          definition:
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: "{{ gitlab_container_registry_secret_name }}"
+              namespace: "{{ monitoring_namespace }}"
+            type: kubernetes.io/dockerconfigjson
+            data: "{{ registry_secret.resources[0].data }}"
+        
+    - block:
+      - name: Wait for Prometheus pods
+        ansible.builtin.include_tasks: roles/common/tasks/wait_for_pods.yml
+        vars:
+          namespace: "{{ monitoring_namespace }}"
+          label_selector: "app.kubernetes.io/instance=prometheus"
+
+      - name: Wait for Grafana pods
+        ansible.builtin.include_tasks: roles/common/tasks/wait_for_pods.yml
+        vars:
+          namespace: "{{ monitoring_namespace }}"
+          label_selector: "app.kubernetes.io/name=grafana"
+
+    - name: Deploy Grafana setup job
+      kubernetes.core.k8s:
+        state: present
+        template:
+          path: '../templates/grafana-setup-job.yml.j2'

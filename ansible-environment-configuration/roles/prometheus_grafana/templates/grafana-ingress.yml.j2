@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+name: grafana-ingress
+namespace: monitoring
+annotations:
+  kubernetes.io/ingress.class: alb
+  alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-3:531920760589:certificate/f1f058cf-9e44-4fc4-bada-048e7a4abf2e
+  alb.ingress.kubernetes.io/backend-protocol: HTTP
+  alb.ingress.kubernetes.io/target-type: ip
+  alb.ingress.kubernetes.io/scheme: internet-facing
+  alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+  external-dns.alpha.kubernetes.io/hostname: "{{ grafana_hostname }}"
+spec:
+rules:
+  - host: "{{ grafana_hostname }}"
+  http:
+    paths:
+    - path: /
+      pathType: Prefix
+      backend:
+      service:
+        name: grafana
+        port:
+        number: 80
+tls:
+  - hosts:
+    - "{{ grafana_hostname }}"

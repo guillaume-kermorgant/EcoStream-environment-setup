@@ -6,4 +6,5 @@
     - role: eks_access
     - role: ecostream_namespace
     - role: argocd
+    - role: prometheus_grafana
     - role: post_deploy
