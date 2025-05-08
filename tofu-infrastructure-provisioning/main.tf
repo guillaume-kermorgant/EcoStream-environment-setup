@@ -54,6 +54,12 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
+  default_tags {
+   tags = {
+     Environment = "ecostream-eks-${var.env_name}"
+   }
+ }
+
 }
 
 provider "kubernetes" {

@@ -41,6 +41,19 @@
     #         serviceType: ClusterIP
     #         backendProtocolVersion: GRPC
 
+- name: Wait for all ArgoCD pods to be running
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: "{{ argocd_namespace }}"
+    label_selectors:
+      - app.kubernetes.io/part-of=argocd
+  register: argocd_pods
+  until: >
+    argocd_pods.resources | length > 0 and
+    (argocd_pods.resources | map(attribute='status.phase') | list) is subset(['Running'])
+  retries: 30
+  delay: 10
+
 # TODO: ingress returns 502 Bad Gateway at first
 # We need to run the following command to make it work:
 # helm upgrade --install ecostream-argo argo/argo-cd --namespace argocd --set config.params.server.insecure=true
