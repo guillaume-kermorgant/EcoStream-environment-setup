@@ -21,7 +21,7 @@ argocd_hostname: "argocd.{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
 monitoring_namespace: "monitoring"
 grafana_admin_secret_name: "grafana-admin-secret"
 grafana_hostname: "grafana.{{ lookup('env', 'ECOSTREAM_HOSTNAME') }}"
-grafana_setup_job_image: "registry.gitlab.com/gkermo/ecostream/base_images/alpine:3.19-amd64"
+grafana_setup_job_image: "registry.gitlab.com/gkermo/ecostream/base_images/ubuntu:22.04-amd64"
 ## Node Exporter Full https://grafana.com/grafana/dashboards/1860-node-exporter-full/
 grafana_dashboard_id: 1860
 ## Add an alert on CPU or memory usage - c.f. prometheus_grafana role fo the thresholds
