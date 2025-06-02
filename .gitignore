@@ -32,3 +32,4 @@ tofu-infrastructure-provisioning/personal_doc
 ansible-environment-configuration/personal_doc
 
 tofu-k3s-deprecated
+.vscode
